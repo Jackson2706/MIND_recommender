@@ -82,6 +82,7 @@ def download_extract_mind(size="small", dest_path=None):
     train_zip_path, valid_zip_path = download_mind(size, dest_path)
     train_path, valid_path = extract_mind(train_zip=train_zip_path,valid_zip=valid_zip_path, clean_zip_file=False)
     # Precess data, convert .tsv to .json  format
+    json_data_path = []
     for data_path in [train_path, valid_path]:
         df_path = os.path.join(data_path, "news.tsv")
         df = pd.read_table(df_path, names=['newid', 'vertical', 'subvertical', 'title','abstract', 'url', 'entities in title', 'entities in abstract'],
@@ -95,6 +96,7 @@ def download_extract_mind(size="small", dest_path=None):
         json_file_path = os.path.join(data_path, "news.json")
         with open(json_file_path, 'w') as json_file:
             json.dump(data,json_file)
+        json_data_path.append(json_file_path)
 
         df_path = os.path.join(data_path, "behaviors.tsv")
         df = pd.read_table(df_path, names=['Impression ID','user_id', 'time_stamp', 'clickHist', 'ImpreLog'],
@@ -108,10 +110,10 @@ def download_extract_mind(size="small", dest_path=None):
         json_file_path = os.path.join(data_path, "behaviors.json")
         with open(json_file_path, 'w') as json_file:
             json.dump(data,json_file)
-
-    return train_path, valid_path
+        json_data_path.append(json_file_path)
+    return json_data_path
 
 if __name__ == '__main__':
-    train_path, valid_path = download_extract_mind(size = "small", dest_path="./datasets")
+    [train_news_data, train_users_data, valid_news_data, valid_users_data] = download_extract_mind(size = "small", dest_path="./datasets")
 
     
