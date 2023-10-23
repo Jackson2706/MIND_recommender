@@ -78,42 +78,12 @@ def extract_mind(
     return train_path, valid_path
 
 
-def download_extract_mind(size="small", dest_path=None):
+def download_extract_small_mind(size="small", dest_path=None):
     train_zip_path, valid_zip_path = download_mind(size, dest_path)
     train_path, valid_path = extract_mind(train_zip=train_zip_path,valid_zip=valid_zip_path, clean_zip_file=False)
-    # Precess data, convert .tsv to .json  format
-    json_data_path = []
-    for data_path in [train_path, valid_path]:
-        df_path = os.path.join(data_path, "news.tsv")
-        df = pd.read_table(df_path, names=['newid', 'vertical', 'subvertical', 'title','abstract', 'url', 'entities in title', 'entities in abstract'],
-                            usecols = ['newid', 'title'], header=None)
-        data = []
-        for row in df.itertuples(index=False):
-            item_data = {}
-            item_data['id'] = row.newid
-            item_data['title'] = row.title.split(' ')
-            data.append(item_data)
-        json_file_path = os.path.join(data_path, "news.json")
-        with open(json_file_path, 'w') as json_file:
-            json.dump(data,json_file)
-        json_data_path.append(json_file_path)
-
-        df_path = os.path.join(data_path, "behaviors.tsv")
-        df = pd.read_table(df_path, names=['Impression ID','user_id', 'time_stamp', 'clickHist', 'ImpreLog'],
-                            usecols = ['user_id', 'ImpreLog'], header=None)
-        data = []
-        for row in df.itertuples(index=False):
-            item_data = {}
-            item_data['user_id'] = row.user_id
-            item_data['push'] = [clicked_new[:-2] for clicked_new in row.ImpreLog.split(' ') if clicked_new[-1] == "1" ]
-            data.append(item_data)
-        json_file_path = os.path.join(data_path, "behaviors.json")
-        with open(json_file_path, 'w') as json_file:
-            json.dump(data,json_file)
-        json_data_path.append(json_file_path)
-    return json_data_path
+    return train_path, valid_path    
 
 if __name__ == '__main__':
-    [train_news_data, train_users_data, valid_news_data, valid_users_data] = download_extract_mind(size = "small", dest_path="./datasets")
+    train_path, valid_path = download_extract_small_mind(size = "small", dest_path="./data/mind-demo")
 
     
