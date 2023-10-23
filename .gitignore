@@ -2,3 +2,8 @@
 *.zip
 data
 *.model
+train
+
+
+*.pyc
+*.json
